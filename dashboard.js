@@ -1,5 +1,5 @@
 // CONFIGURATION & THEME CONTEXT
-const API_URL = "https://script.google.com/macros/s/AKfycbxaMRvtl8pKGQiYpXmh3NQ6Vki6KX-8x3MRKXZwSMIBQeJ2UXZg_oG25eGsXt6rMmSr/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbzxCvrgcBdaYmFgomBKzYPylJ7wx3YJLD_VfjrAyC5S4XrcWPOESXf4fct7_5wjOb7b/exec";
 
 const HOUSE_CONFIG = {
     "ALPHA": { name: "ALPHA", color: "#FF3B30" },
@@ -64,7 +64,7 @@ async function fetchDashboardData() {
         updateUI(data);
     } catch (error) {
         console.error("Dashboard Engine Error:", error);
-        // Fallback mockup jika API gagal dihubungi atau sekatan rangkaian internet padang
+        // Fallback mockup jika API gagal dihubungi atau internet padang terputus seketika
         generateMockupIfEmpty();
     }
 }
@@ -78,7 +78,7 @@ function updateUI(data) {
     updateScoreboard(ranking);
     updatePodium(ranking);
     updateChart(ranking);
-    updatePredictor(ranking);
+    updatePredictor(ranking, data); // Hantar data penuh untuk Olahragawan/wati
     
     if (data.medalTable) updateMedals(data.medalTable);
     if (data.eventFeed) updateTicker(data.eventFeed);
@@ -142,8 +142,8 @@ function updateChart(ranking) {
     pointsChart.update();
 }
 
-// ALGORITHM FOR CHAMPION PREDICTOR
-function updatePredictor(ranking) {
+// CHAMPION PREDICTOR & LIVE ATHLETE TRACKING
+function updatePredictor(ranking, data) {
     if (ranking.length === 0) return;
     const topHouse = ranking[0];
     const secondHouse = ranking[1];
@@ -157,11 +157,28 @@ function updatePredictor(ranking) {
     badgeEl.style.backgroundColor = conf.color;
     badgeEl.style.color = topHouse.rumah === 'GAMMA' ? '#000' : '#fff';
 
-    if (diff > 50) {
-        textEl.innerText = `${topHouse.rumah} sedang mendominasi dengan jurang kelebihan ${diff} mata. Peluang tinggi untuk bergelar Juara Keseluruhan!`;
-    } else {
-        textEl.innerText = `${topHouse.rumah} memimpin tipis dengan beza ${diff} mata di hadapan ${secondHouse.rumah}. Kedudukan sangat sengit!`;
+    let ulasanMata = diff > 50 
+        ? `${topHouse.rumah} mendominasi dengan jurang +${diff} mata.` 
+        : `${topHouse.rumah} memimpin tipis dengan beza +${diff} mata di hadapan ${secondHouse.rumah}.`;
+
+    // Logik paparan Olahragawan & Olahragawati secara automatik
+    let olahragawanTxt = "Menunggu data acara individu...";
+    let olahragawatiTxt = "Menunggu data acara individu...";
+
+    if (data && data.olahragawan && data.olahragawan.nama !== "Tiada Data") {
+        olahragawanTxt = `👑 <b>${data.olahragawan.nama}</b> (${data.olahragawan.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawan.emas} Emas | ${data.olahragawan.perak} Perak | ${data.olahragawan.gangsa} Gangsa]</span>`;
     }
+    if (data && data.olahragawati && data.olahragawati.nama !== "Tiada Data") {
+        olahragawatiTxt = `👑 <b>${data.olahragawati.nama}</b> (${data.olahragawati.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawati.emas} Emas | ${data.olahragawati.perak} Perak | ${data.olahragawati.gangsa} Gangsa]</span>`;
+    }
+
+    textEl.innerHTML = `
+        <div style="margin-bottom: 12px; font-weight: 600;">${ulasanMata}</div>
+        <div style="font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+            <div><i class="fa-solid fa-person-running" style="color: #60a5fa"></i> <b>Peneraju Olahragawan:</b><br><span style="color: #e2e8f0">${olahragawanTxt}</span></div>
+            <div><i class="fa-solid fa-person-running" style="color: #f472b6"></i> <b>Peneraju Olahragawati:</b><br><span style="color: #e2e8f0">${olahragawatiTxt}</span></div>
+        </div>
+    `;
 }
 
 // INJECT MEDAL DATA
@@ -185,8 +202,8 @@ function updateMedals(medalTable) {
 // UPDATE EVENT FEED (TICKER)
 function updateTicker(feed) {
     const ticker = document.getElementById('eventFeedTicker');
-    if (feed.length === 0) {
-        ticker.innerText = "Kejohanan sedang berlangsung sengit di padang SK Satu Sultan Alam Shah!";
+    if (!feed || feed.length === 0) {
+        ticker.innerText = "Kejohanan sedang berlangsung riuh-rendah di padang SK Satu Sultan Alam Shah!";
         return;
     }
     ticker.innerText = feed.join('   |   🚀   ');
@@ -235,16 +252,18 @@ function generateMockupIfEmpty() {
             { rumah: "GAMMA", emas: 5, perak: 9, gangsa: 6 }
         ],
         eventFeed: [
-            "ACARA 102: Lari 100m (L12) - Emas: ALPHA (M. Rayyan), Perak: BETA, Gangsa: SIGMA",
+            "Lompat Jauh Tahun 4 L 🥇 EMAS: IZYAN HANANI BINTI SHAHRUL NIZAM (DELTA)",
             "SUKANEKA TAHAP 1: Acara Bawa Bola Ping Pong dalam Sudu - Johan disandang oleh DELTA!",
             "KEMAS KINI: Rumah GAMMA menang tempat pertama perlawanan Tarik Tali Peringkat Saringan."
         ],
         categoryBreakdown: {
             "Balapan": { leader: "ALPHA", mata: 150, percentage: 85 },
-            "Padang": { leader: "BETA", mata: 120, percentage: 70 },
-            "Sukaneka": { leader: "DELTA", mata: 160, percentage: 90 },
+            "Padang": { leader: "DELTA", mata: 160, percentage: 90 },
+            "Sukaneka": { leader: "BETA", mata: 120, percentage: 70 },
             "Tarik Tali": { leader: "GAMMA", mata: 70, percentage: 45 }
-        }
+        },
+        olahragawan: { nama: "IZYAN HANANI BINTI SHAHRUL NIZAM", rumah: "DELTA", emas: 1, perak: 0, gangsa: 0 },
+        olahragawati: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 }
     };
     updateUI(mockData);
 }
