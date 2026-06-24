@@ -1,0 +1,421 @@
+/* ROOT VARIABLES & THEME CONFIG */
+:root {
+    --bg-dark: #0a0f1d;
+    --bg-card: #141b2d;
+    --border-color: #222f47;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    
+    /* Sports Colors */
+    --gold: #ffd700;
+    --silver: #e2e8f0;
+    --bronze: #cd7f32;
+    
+    /* Official House Colors */
+    --alpha: #FF3B30;
+    --beta: #007AFF;
+    --delta: #34C759;
+    --gamma: #FFCC00;
+    --sigma: #AF52DE;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.1rem;
+    overflow-x: hidden;
+}
+
+/* LIVE TICKER FEED */
+.ticker-wrap {
+    display: flex;
+    background: #000;
+    border-bottom: 2px solid #ff3b30;
+    height: 45px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    overflow: hidden;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.ticker-title {
+    background: #ff3b30;
+    color: #fff;
+    padding: 0 20px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 5px 0 15px rgba(0,0,0,0.5);
+    z-index: 2;
+}
+
+.ticker {
+    display: inline-block;
+    white-space: nowrap;
+    padding-left: 100%;
+    animation: marquee 25s linear infinite;
+    color: var(--gold);
+    font-weight: 600;
+}
+
+@keyframes marquee {
+    0% { transform: translate3d(0, 0, 0); }
+    100% { transform: translate3d(-100%, 0, 0); }
+}
+
+/* CONTAINER ADJUSTMENTS */
+.dashboard-container {
+    padding: 20px;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+/* HERO HEADER */
+.hero-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, var(--bg-card) 0%, #0d1527 100%);
+    border: 1px solid var(--border-color);
+    padding: 20px 30px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo-placeholder {
+    font-size: 3rem;
+    color: var(--gold);
+    background: rgba(255, 215, 0, 0.1);
+    width: 70px;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+}
+
+.hero-header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 2px;
+    background: linear-gradient(to right, #fff, var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-header h2 {
+    color: var(--gold);
+    font-size: 1.3rem;
+    letter-spacing: 1px;
+}
+
+.live-badge {
+    background: rgba(255, 59, 48, 0.15);
+    border: 1px solid var(--alpha);
+    color: var(--alpha);
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.pulse-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--alpha);
+    border-radius: 50%;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(255,59,48,0.7); }
+    70% { transform: scale(1); opacity: 0.5; box-shadow: 0 0 0 10px rgba(255,59,48,0); }
+    100% { transform: scale(0.9); opacity: 1; box-shadow: 0 0 0 0 rgba(255,59,48,0); }
+}
+
+.update-time {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    text-align: right;
+    margin-top: 8px;
+}
+
+/* LAYOUT GRID */
+.grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 20px;
+}
+
+/* CARDS STYLING */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+
+.card h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* LIVE PODIUM BUILDER */
+.podium-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 200px;
+    padding: 10px 0;
+    gap: 15px;
+}
+
+.podium-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30%;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.podium-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.8);
+    border-radius: 6px 6px 0 0;
+    box-shadow: inset 0 4px 10px rgba(255,255,255,0.1);
+}
+
+.podium-house-name {
+    font-weight: bold;
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+    letter-spacing: 1px;
+}
+
+.podium-score {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-top: 5px;
+}
+
+.step-1 .podium-bar { height: 110px; background: linear-gradient(to top, #b8860b, var(--gold)); border: 2px solid var(--gold); }
+.step-2 .podium-bar { height: 80px; background: linear-gradient(to top, #475569, #94a3b8); border: 2px solid #94a3b8; }
+.step-3 .podium-bar { height: 55px; background: linear-gradient(to top, #7c2d12, var(--bronze)); border: 2px solid var(--bronze); }
+
+.podium-crown {
+    color: var(--gold);
+    font-size: 1.5rem;
+    margin-bottom: -5px;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* CHAMPION PREDICTOR */
+.predictor-card {
+    background: linear-gradient(45deg, #1e1b4b 0%, #311042 100%);
+    border: 1px solid #4c1d95;
+}
+.predictor-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.predictor-card h4 {
+    color: #a78bfa;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+.predictor-badge {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.8rem;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+/* SCOREBOARD LIST ITEMS */
+.scoreboard-row {
+    display: flex;
+    align-items: center;
+    background: #1c2638;
+    border: 1px solid var(--border-color);
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    position: relative;
+    overflow: hidden;
+}
+
+.scoreboard-row::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background-color: var(--house-color);
+}
+
+.rank-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 40px;
+}
+
+.house-identity {
+    flex-grow: 1;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.house-pts {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+/* CHART DISPLAY */
+.chart-container {
+    position: relative;
+    height: 280px;
+    width: 100%;
+}
+
+/* TABLES STYLING */
+.sub-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+td {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.medal-gold { color: var(--gold); }
+.medal-silver { color: var(--silver); }
+.medal-bronze { color: var(--bronze); }
+
+/* CATEGORY BREAKDOWN LIST */
+.breakdown-item {
+    margin-bottom: 12px;
+}
+.breakdown-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: var(--text-muted);
+}
+.progress-track {
+    background: #1c2638;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    display: flex;
+}
+.progress-bar {
+    height: 100%;
+    transition: width 0.6s ease;
+}
+
+/* RESPONSIVE DESIGN BREAKPOINTS */
+@media (max-width: 1200px) {
+    .grid-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .sub-grid {
+        grid-template-columns: 1fr;
+    }
+    .hero-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    .header-left {
+        flex-direction: column;
+    }
+    .header-right {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+/* OPTIMASI TV & PROJEKTOR */
+@media (min-width: 1800px) {
+    body { font-size: 1.3rem; }
+    .card h3 { font-size: 1.6rem; }
+    .house-pts { font-size: 2.2rem; }
+    .chart-container { height: 400px; }
+    .podium-container { height: 300px; }
+}
