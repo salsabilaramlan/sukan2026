@@ -65,12 +65,12 @@
                 </section>
 
                 <section class="card predictor-card">
-                    <div class="predictor-content">
-                        <div>
-                            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> RAMALAN JUARA KESELURUHAN</h4>
+                    <div class="predictor-content" style="position: relative; width: 100%;">
+                        <div style="width: 85%;">
+                            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> ANALISIS & PENERAJU ANUGERAH</h4>
                             <p id="predictorTxt">Menganalisis data semasa...</p>
                         </div>
-                        <div class="predictor-badge" id="predictorBadge">-</div>
+                        <div class="predictor-badge" id="predictorBadge" style="position: absolute; right: 0; top: 10px;">-</div>
                     </div>
                 </section>
 
@@ -123,45 +123,40 @@
         </div>
     </div>
 
-    <script src="dashboard.js"></script>
-    <!-- TOMBOL RAHSIA ADMIN (Letak di sudut bawah skrin) -->
-    <button id="adminLogBtn" onclick="toggleAdminModal()" style="position: fixed; bottom: 15px; right: 15px; background: rgba(20,27,45,0.8); border: 1px solid #222f47; color: #94a3b8; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; z-index: 9999;"><i class="fa-solid fa-lock"></i> ADMIN LOG</button>
-
-    <!-- PREMIUM MODAL: FULL ATHLETE LEADERBOARD -->
     <div id="adminModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10,15,29,0.95); z-index: 10000; justify-content: center; align-items: center; padding: 20px;">
         <div style="background: #141b2d; border: 2px solid #222f47; width: 100%; max-width: 900px; max-height: 85vh; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.5);">
             
-            <!-- HEADER MODAL -->
             <div style="padding: 20px; border-bottom: 1px solid #222f47; display: flex; justify-content: space-between; align-items: center; background: #1c2638;">
                 <h3 style="margin: 0; font-family: 'Orbitron', sans-serif; color: #ffd700; letter-spacing: 1px;"><i class="fa-solid fa-users-gear"></i> KEDUDUKAN PENUH PINGAT ATLET (AUTO-ADMIN)</h3>
-                <button onclick="toggleAdminModal()" style="background: #ff3b30; border: none; color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">TUTUP [X]</button>
+                <button onclick="toggleAdminModal()" style="background: #ff3b30; border: none; color: white; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: 'Orbitron'; font-size: 0.8rem;">TUTUP [X]</button>
             </div>
 
-            <!-- SEARCH FILTER -->
             <div style="padding: 15px 20px; border-bottom: 1px solid #222f47; background: #111827;">
                 <input type="text" id="adminSearchInput" onkeyup="filterAdminTable()" placeholder="🔍 Cari nama atlet atau rumah sukan..." style="width: 100%; padding: 12px; background: #0a0f1d; border: 1px solid #222f47; color: white; border-radius: 6px; font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;">
             </div>
 
-            <!-- JADUAL DATA -->
             <div style="overflow-y: auto; padding: 20px; flex-grow: 1;">
                 <table style="width: 100%; border-collapse: collapse;" id="adminLeaderboardTable">
                     <thead>
                         <tr style="background: #0a0f1d; color: #94a3b8; font-family: 'Orbitron', sans-serif; font-size: 0.9rem;">
                             <th style="padding: 12px; text-align: left;">RANK</th>
                             <th style="padding: 12px; text-align: left;">NAMA ATLET</th>
-                            <th style="padding: 12px;">RUMAH</th>
-                            <th style="padding: 12px; color: #ffd700;">🥇 E</th>
-                            <th style="padding: 12px; color: #e2e8f0;">🥈 P</th>
-                            <th style="padding: 12px; color: #cd7f32;">🥉 G</th>
-                            <th style="padding: 12px;">JUMLAH</th>
+                            <th style="padding: 12px; text-align: center;">RUMAH</th>
+                            <th style="padding: 12px; text-align: center; color: #ffd700;">🥇 E</th>
+                            <th style="padding: 12px; text-align: center; color: #e2e8f0;">🥈 P</th>
+                            <th style="padding: 12px; text-align: center; color: #cd7f32;">🥉 G</th>
+                            <th style="padding: 12px; text-align: center;">JUMLAH</th>
                         </tr>
                     </thead>
-                    <tbody id="adminTableBody" style="font-family: 'Rajdhani', sans-serif; font-size: 1.1rem;">
-                        <!-- Diproses secara auto oleh JS -->
-                    </tbody>
+                    <tbody id="adminTableBody" style="font-family: 'Rajdhani', sans-serif; font-size: 1.1rem; color: #f8fafc;">
+                        </tbody>
                 </table>
             </div>
         </div>
     </div>
+
+    <button id="adminLogBtn" onclick="toggleAdminModal()" style="position: fixed; bottom: 15px; right: 15px; background: rgba(20,27,45,0.9); border: 1px solid #222f47; color: #94a3b8; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-family: 'Orbitron', sans-serif; font-size: 0.8rem; z-index: 9999; transition: all 0.3s;"><i class="fa-solid fa-lock"></i> ADMIN LOG</button>
+
+    <script src="dashboard.js"></script>
 </body>
 </html>
