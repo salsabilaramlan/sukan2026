@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Live Kejohanan Sukan SK SASAS 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="ticker-wrap">
+        <div class="ticker-title">KEPUTUSAN TERKINI <i class="fa-solid fa-bolt flash-anim"></i></div>
+        <div class="ticker" id="eventFeedTicker">Memuatkan keputusan terkini dari padang...</div>
+    </div>
+
+    <div class="dashboard-container">
+        
+        <header class="hero-header">
+            <div class="header-left">
+                <div class="logo-placeholder">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <h1>KEJOHANAN SUKAN & SUKANEKA 2026</h1>
+                    <h2>SK SATU SULTAN ALAM SHAH</h2>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="live-badge">
+                    <span class="pulse-dot"></span> LIVE COMMAND CENTER
+                </div>
+                <div class="update-time">
+                    Kemas Kini Akhir: <span id="lastUpdateTxt">--:--:--</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-layout">
+            
+            <div class="col-left">
+                
+                <section class="card podium-card">
+                    <h3><i class="fa-solid fa-trophy text-gold"></i> PODIUM UTAMA</h3>
+                    <div class="podium-container" id="livePodium">
+                        <div class="podium-step step-2" id="podium2">
+                            <div class="podium-house-name">BETA</div>
+                            <div class="podium-bar">2</div>
+                            <div class="podium-score">0 pts</div>
+                        </div>
+                        <div class="podium-step step-1" id="podium1">
+                            <div class="podium-crown"><i class="fa-solid fa-crown"></i></div>
+                            <div class="podium-house-name">ALPHA</div>
+                            <div class="podium-bar">1</div>
+                            <div class="podium-score">0 pts</div>
+                        </div>
+                        <div class="podium-step step-3" id="podium3">
+                            <div class="podium-house-name">DELTA</div>
+                            <div class="podium-bar">3</div>
+                            <div class="podium-score">0 pts</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="card predictor-card">
+                    <div class="predictor-content">
+                        <div>
+                            <h4><i class="fa-solid fa-wand-magic-sparkles"></i> RAMALAN JUARA KESELURUHAN</h4>
+                            <p id="predictorTxt">Menganalisis data semasa...</p>
+                        </div>
+                        <div class="predictor-badge" id="predictorBadge">-</div>
+                    </div>
+                </section>
+
+                <section class="card list-card">
+                    <h3><i class="fa-solid fa-list-ol"></i> KEDUDUKAN KESELURUHAN RUMAH SUKAN</h3>
+                    <div class="scoreboard-list" id="houseStandingsList">
+                        </div>
+                </section>
+            </div>
+
+            <div class="col-right">
+                
+                <section class="card chart-card">
+                    <h3><i class="fa-solid fa-chart-bar"></i> ANALISIS KADAR MATA SEMASA</h3>
+                    <div class="chart-container">
+                        <canvas id="pointsChart"></canvas>
+                    </div>
+                </section>
+
+                <div class="sub-grid">
+                    
+                    <section class="card table-card">
+                        <h3><i class="fa-solid fa-medal"></i> PUNGUTAN PINGAT EKSKLUSIF</h3>
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>RUMAH</th>
+                                        <th><i class="fa-solid fa-medal medal-gold"></i> E</th>
+                                        <th><i class="fa-solid fa-medal medal-silver"></i> P</th>
+                                        <th><i class="fa-solid fa-medal medal-bronze"></i> G</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="medalTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section class="card breakdown-card">
+                        <h3><i class="fa-solid fa-layer-group"></i> DOMINASI KATEGORI</h3>
+                        <div class="breakdown-list" id="categoryBreakdown">
+                            </div>
+                    </section>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
