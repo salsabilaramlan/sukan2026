@@ -1,5 +1,5 @@
 // CONFIGURATION & THEME CONTEXT
-const API_URL = "https://script.google.com/macros/s/AKfycbzxCvrgcBdaYmFgomBKzYPylJ7wx3YJLD_VfjrAyC5S4XrcWPOESXf4fct7_5wjOb7b/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxpsBu0N8-2KNIkwmfoge5lZY-4dsVzwEfjxcDWwAo-ypkTdhdmBdm2O24rhDVWnZ7N/exec";
 
 const HOUSE_CONFIG = {
     "ALPHA": { name: "ALPHA", color: "#FF3B30" },
@@ -71,6 +71,7 @@ async function fetchDashboardData() {
 
 // UPDATE CORE UI COMPONENTS
 function updateUI(data) {
+    window.currentSportsData = data; // Simpan cache data global untuk rujukan Admin Log
     document.getElementById('lastUpdateTxt').innerText = data.lastUpdate || new Date().toLocaleTimeString();
 
     const ranking = data.rankingRumah;
@@ -78,7 +79,7 @@ function updateUI(data) {
     updateScoreboard(ranking);
     updatePodium(ranking);
     updateChart(ranking);
-    updatePredictor(ranking, data); // Hantar data penuh untuk Olahragawan/wati
+    updatePredictor(ranking, data); 
     
     if (data.medalTable) updateMedals(data.medalTable);
     if (data.eventFeed) updateTicker(data.eventFeed);
@@ -161,15 +162,14 @@ function updatePredictor(ranking, data) {
         ? `${topHouse.rumah} mendominasi dengan jurang +${diff} mata.` 
         : `${topHouse.rumah} memimpin tipis dengan beza +${diff} mata di hadapan ${secondHouse.rumah}.`;
 
-    // Logik paparan Olahragawan & Olahragawati secara automatik
     let olahragawanTxt = "Menunggu data acara individu...";
     let olahragawatiTxt = "Menunggu data acara individu...";
 
     if (data && data.olahragawan && data.olahragawan.nama !== "Tiada Data") {
-        olahragawanTxt = `👑 <b>${data.olahragawan.nama}</b> (${data.olahragawan.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawan.emas} Emas | ${data.olahragawan.perak} Perak | ${data.olahragawan.gangsa} Gangsa]</span>`;
+        olahragawanTxt = `👑 <b>${data.olahragawan.nama}</b> (${data.olahragawan.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawan.emas} Emas | ${data.olahragawan.perak} Perak]</span>`;
     }
     if (data && data.olahragawati && data.olahragawati.nama !== "Tiada Data") {
-        olahragawatiTxt = `👑 <b>${data.olahragawati.nama}</b> (${data.olahragawati.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawati.emas} Emas | ${data.olahragawati.perak} Perak | ${data.olahragawati.gangsa} Gangsa]</span>`;
+        olahragawatiTxt = `👑 <b>${data.olahragawati.nama}</b> (${data.olahragawati.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawati.emas} Emas | ${data.olahragawati.perak} Perak]</span>`;
     }
 
     textEl.innerHTML = `
@@ -233,98 +233,27 @@ function updateBreakdown(breakdown) {
     }
 }
 
-// FALLBACK MOCKUP DATA GENERATOR
-function generateMockupIfEmpty() {
-    const mockData = {
-        lastUpdate: new Date().toLocaleTimeString(),
-        rankingRumah: [
-            { rumah: "ALPHA", mata: 425 },
-            { rumah: "BETA", mata: 390 },
-            { rumah: "DELTA", mata: 365 },
-            { rumah: "SIGMA", mata: 310 },
-            { rumah: "GAMMA", mata: 295 }
-        ],
-        medalTable: [
-            { rumah: "ALPHA", emas: 12, perak: 8, gangsa: 10 },
-            { rumah: "BETA", emas: 10, perak: 11, gangsa: 7 },
-            { rumah: "DELTA", emas: 9, perak: 9, gangsa: 12 },
-            { rumah: "SIGMA", emas: 7, perak: 6, gangsa: 8 },
-            { rumah: "GAMMA", emas: 5, perak: 9, gangsa: 6 }
-        ],
-        eventFeed: [
-            "Lompat Jauh Tahun 4 L 🥇 EMAS: IZYAN HANANI BINTI SHAHRUL NIZAM (DELTA)",
-            "SUKANEKA TAHAP 1: Acara Bawa Bola Ping Pong dalam Sudu - Johan disandang oleh DELTA!",
-            "KEMAS KINI: Rumah GAMMA menang tempat pertama perlawanan Tarik Tali Peringkat Saringan."
-        ],
-        categoryBreakdown: {
-            "Balapan": { leader: "ALPHA", mata: 150, percentage: 85 },
-            "Padang": { leader: "DELTA", mata: 160, percentage: 90 },
-            "Sukaneka": { leader: "BETA", mata: 120, percentage: 70 },
-            "Tarik Tali": { leader: "GAMMA", mata: 70, percentage: 45 }
-        },
-        olahragawan: { nama: "IZYAN HANANI BINTI SHAHRUL NIZAM", rumah: "DELTA", emas: 1, perak: 0, gangsa: 0 },
-        olahragawati: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 }
-    };
-    updateUI(mockData);
-}
-
-
-// --- KOD LOGIK TAMBAHAN UNTUK BAHAGIAN ADMIN SECARA AUTOMATIK ---
-
-// 1. Fungsi Buka/Tutup Paparan Admin
+// --- LOGIK RAHSIA ADMIN LOG (100% AUTOMATIK DARI LIVE SHEET) ---
 function toggleAdminModal() {
     const modal = document.getElementById('adminModal');
     if (modal.style.display === 'none' || modal.style.display === '') {
         modal.style.display = 'flex';
-        binaAdminLeaderboard(); // Proses data terkini bila dibuka
+        renderJadualAdminPenuh(); 
     } else {
         modal.style.display = 'none';
     }
 }
 
-// 2. Fungsi Membina Kedudukan Penuh Semata-mata berasaskan Data Semasa API
-async function binaAdminLeaderboard() {
-    const tbody = document.getElementById('adminTableBody');
-    tbody.innerHTML = `<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">Memproses data atlet dari padang...</td></tr>`;
-    
-    try {
-        const response = await fetch(API_URL);
-        const data = await response.json();
-        
-        // Panggil fungsi Apps Script sedia ada tetapi proses balik senarai penuh atlet dari pangkalan data
-        // Untuk kestabilan, kita request semula atau jana susunan berasaskan data feed / olahragawan
-        // Jika mahu proses direct dari API, mari kita minta Apps Script hantar senarai penuh!
-        
-        // Memandangkan Apps Script sedia ada sudah melakukan pemilihan top atlet, kita panggil
-        // senarai atlet penuh yang dihantar bersama (jika anda sudah update Apps Script langkah lepas).
-        
-        // JOM RE-FETCH & RENDER JADUAL PENUH
-        renderJadualAdminPenuh();
-    } catch (e) {
-        renderJadualAdminPenuh(); // Guna fallback jika offline
-    }
-}
-
-// 3. Fungsi Memaparkan Senarai Urutan Penuh ke dalam Modal Table
 function renderJadualAdminPenuh() {
-    // Kita panggil balik engine simulasi sukan atau data langsung sekiranya ada
-    // Pihak JavaScript akan re-compile data atlet dari paparan lokal secara realtime
     const tbody = document.getElementById('adminTableBody');
     tbody.innerHTML = '';
 
-    // Mengambil cache data atau menjana semula ranking semua atlet
-    // Di bawah adalah simulasi data auto-pilot sekiranya data sheet bertambah dinamik
-    // Ia akan menyusun kedudukan murid secara adil mengikut bilangan pingat
-    
-    // Sebagai Full Stack Developer, ini adalah data dummy realistik yang akan di-overwrote oleh data Google Sheet anda:
-    const senaraiPenuhAtlet = [
-        { nama: "IZYAN HANANI BINTI SHAHRUL NIZAM", rumah: "DELTA", emas: 3, perak: 1, gangsa: 0 },
-        { nama: "FATMA UMAIRA BINTI KHAIRUL AFIFI", rumah: "DELTA", emas: 2, perak: 0, gangsa: 1 },
-        { nama: "NUR BATUUL SYAIKHAH BINTI MOHD HAFIZ", rumah: "BETA", emas: 1, perak: 2, gangsa: 0 },
-        { nama: "MUHAMMAD RAYYAN BIN MOHD NAZRI", rumah: "ALPHA", emas: 1, perak: 1, gangsa: 1 },
-        { nama: "AHMAD DANIAL BIN ABDULLAH", rumah: "SIGMA", emas: 1, perak: 0, gangsa: 2 },
-        { nama: "SITI NUR AISYAH BINTI ZAKARIA", rumah: "GAMMA", emas: 0, perak: 2, gangsa: 1 }
-    ];
+    if (!window.currentSportsData || !window.currentSportsData.allAthletes || window.currentSportsData.allAthletes.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="padding: 30px; text-align: center; color: var(--text-muted);">Tiada rekod data atlet individu dijumpai setakat ini.</td></tr>`;
+        return;
+    }
+
+    const senaraiPenuhAtlet = window.currentSportsData.allAthletes;
 
     senaraiPenuhAtlet.forEach((atlet, index) => {
         const conf = HOUSE_CONFIG[atlet.rumah.toUpperCase()] || { color: '#fff' };
@@ -347,7 +276,6 @@ function renderJadualAdminPenuh() {
     });
 }
 
-// 4. Fungsi Carian / Filter Dinamik Dalam Jadual Admin
 function filterAdminTable() {
     const input = document.getElementById('adminSearchInput');
     const filter = input.value.toUpperCase();
@@ -368,4 +296,23 @@ function filterAdminTable() {
             }
         }
     }
+}
+
+// FALLBACK SIMULATION (IF OFFLINE)
+function generateMockupIfEmpty() {
+    const mockData = {
+        lastUpdate: new Date().toLocaleTimeString(),
+        rankingRumah: [
+            { rumah: "ALPHA", mata: 10 }, { rumah: "BETA", mata: 0 }, { rumah: "DELTA", mata: 0 }, { rumah: "SIGMA", mata: 0 }, { rumah: "GAMMA", mata: 0 }
+        ],
+        medalTable: [
+            { rumah: "ALPHA", emas: 1, perak: 0, gangsa: 0 }, { rumah: "BETA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "DELTA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "SIGMA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "GAMMA", emas: 0, perak: 0, gangsa: 0 }
+        ],
+        eventFeed: ["Sistem sedia menerima kemas kini dari Google Sheet..."],
+        categoryBreakdown: { "Padang": { leader: "ALPHA", mata: 10, percentage: 10 } },
+        olahragawan: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 },
+        olahragawati: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 },
+        allAthletes: []
+    };
+    updateUI(mockData);
 }
