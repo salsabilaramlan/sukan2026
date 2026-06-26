@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Senarai Pemenang Kejohanan Sukan SK SASAS 2026</title>
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Gaya tambahan khusus untuk papan keputusan */
+        .pemenang-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: white;
+            border-radius: 8px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .result-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+        .result-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            color: var(--gold);
+        }
+        .result-badge {
+            background: #1e293b;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: var(--text-muted);
+        }
+        .podium-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .medal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #0f172a;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid transparent;
+        }
+        .back-btn {
+            background: #1e293b;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-family: 'Orbitron', sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="pemenang-container">
+        
+        <!-- BUTANG KEMBALI -->
+        <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> KEMBALI KE DASHBOARD</a>
+
+        <header class="hero-header" style="padding: 20px;">
+            <div class="header-left">
+                <div class="logo-placeholder" style="width: 55px; height: 55px; font-size: 2.2rem;">
+                    <i class="fa-solid fa-list-check"></i>
+                </div>
+                <div>
+                    <h1>PAPAN KEPUTUSAN RASMI ACARA</h1>
+                    <h2>KEJOHANAN SUKAN & SUKANEKA 2026</h2>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="update-time">Kemas Kini Akhir: <span id="pemenangUpdateTxt">--:--:--</span></div>
+            </div>
+        </header>
+
+        <!-- KOTAK CARIAN DINAMIK -->
+        <input type="text" id="pemenangSearch" onkeyup="tapisAcara()" placeholder="🔍 Cari nama acara atau kategori (Contoh: Lompat Jauh, Balapan, Padang)..." class="search-box">
+
+        <!-- SENARAI ACARA (AUTO-LOAD) -->
+        <div id="senaraiAcaraPenuh">
+            <div style="text-align: center; padding: 40px; color: var(--text-muted);">Memuatkan papan keputusan terus dari padang...</div>
+        </div>
+
+    </div>
+
+    <script src="pemenang.js"></script>
+</body>
+</html>
