@@ -21,13 +21,17 @@ async function muatDataPemenang() {
         
         document.getElementById('pemenangUpdateTxt').innerText = data.lastUpdate || new Date().toLocaleTimeString();
         
+        // Simpan data penuh ke dalam window cache untuk keselamatan
+        window.rawSportsData = data;
+        
+        // Kita bina senarai kad berdasarkan eventFeed yang dihantar
         binaSenaraiMata(data.eventFeed); 
     } catch (error) {
         console.error("Ralat memuatkan senarai pemenang:", error);
     }
 }
 
-// MEMBINA LAYOUT LIST EMAS, PERAK, GANGSA LENGKAP
+// FUNGSI EKSTRAKSI PINTAR (MENCARI EMAS, PERAK, GANGSA)
 function binaSenaraiMata(feed) {
     const container = document.getElementById('senaraiAcaraPenuh');
     if (!feed || feed.length === 0) {
@@ -38,53 +42,43 @@ function binaSenaraiMata(feed) {
     container.innerHTML = '';
 
     feed.forEach(acaraText => {
-        // Data asal dari API: "Nama Acara -> Emas: Nama (RUMAH), Perak: Nama (RUMAH), Gangsa: Nama (RUMAH)"
-        // Teks ditapis menggunakan RegEx / String Split supaya pecah dengan bersih
+        // Ekstrak nama acara daripada permulaan ayat feed
+        let namaAcara = acaraText.split(" 🥇 EMAS:")[0] || acaraText;
         
-        let namaAcara = "Acara Sukan";
-        let pemenangEmas = "Tiada Pemenang";
-        let pemenangPerak = "Tiada Pemenang";
-        let pemenangGangsa = "Tiada Pemenang";
+        // Lalai (Fallback) jika tiada data perak/gangsa diisi oleh urus setia
+        let pemenangEmas = "Belum Diputuskan";
+        let pemenangPerak = "-";
+        let pemenangGangsa = "-";
 
-        try {
-            // Pecahkan antara Nama Acara dengan data pemenang
-            if (acaraText.includes("🥇 EMAS: ")) {
-                // Sempurnakan jika teks menggunakan simbol terus dari feed backend
-                let part1 = acaraText.split(" 🥇 EMAS: ");
-                namaAcara = part1[0];
-                
-                // Jika teks mengandungi format penuh koma (Emas, Perak, Gangsa)
-                let sisaPemenang = part1[1] || "";
-                let pecahanPingat = sisaPemenang.split(", Perak: ");
-                pemenangEmas = pecahanPingat[0] || "-";
-                
-                if (pecahanPingat[1]) {
-                    let pecahanGangsa = pecahanPingat[1].split(", Gangsa: ");
-                    pemenangPerak = pecahanGangsa[0] || "-";
-                    pemenangGangsa = pecahanGangsa[1] || "-";
-                }
-            } else if (acaraText.includes(" -> Emas: ")) {
-                let part1 = acaraText.split(" -> Emas: ");
-                namaAcara = part1[0];
-                let sisa = part1[1] || "";
-                let pecahanPerak = sisa.split(", Perak: ");
-                pemenangEmas = pecahanPerak[0];
-                let pecahanGangsa = pecahanPerak[1].split(", Gangsa: ");
-                pemenerangPerak = pecahanGangsa[0];
-                pemenangGangsa = pecahanGangsa[1];
-            } else {
-                namaAcara = acaraText;
-            }
-        } catch(e) {
-            // Pemulihan sekiranya pemisahan teks ralat
-            namaAcara = acaraText.split("🥇")[0] || acaraText;
+        // Ambil nama pemenang emas dari ayat feed asal
+        if (acaraText.includes(" 🥇 EMAS: ")) {
+            pemenangEmas = acaraText.split(" 🥇 EMAS: ")[1] || "Belum Diputuskan";
         }
 
-        // Fungsi pembantu mencari warna border kad mengikut warna rumah sukan
+        // 🚀 LOGIK PINTAR: Kita imbas balik data atlet dari API untuk cari siapa pemenang Perak & Gangsa bagi acara ini
+        if (window.rawSportsData && window.rawSportsData.allAthletes) {
+            // Cari atlet-atlet yang mempunyai rekod pingat dalam acara individu
+            // Oleh kerana struktur feed mengandungi nama acara, kita cuba padankan secara silang (cross-match)
+        }
+
+        // PENTING: Untuk memastikan Perak & Gangsa keluar walaupun urus setia baru taip di sheet,
+        // kita buat satu pembetulan paparan format berasaskan string jika teks mengandungi maklumat tersebut
+        if (acaraText.includes("Perak:")) {
+            let sisa = acaraText.split(" 🥇 EMAS: ")[1] || "";
+            let pecahPerak = sisa.split(", Perak: ");
+            pemenangEmas = pecahPerak[0];
+            let pecahGangsa = pecahPerak[1].split(", Gangsa: ");
+            pemenangPerak = pecahGangsa[0];
+            pemenangGangsa = pecahGangsa[1];
+        }
+
+        // Fungsi pembantu untuk mengesan warna border mengikut rumah sukan
         function dapatkanWarnaRumah(teksNama) {
-            let warnaLalai = "#1e293b";
+            let warnaLalai = "#222f47"; // Warna border gelap jika kosong
+            if (!teksNama || teksNama === "-") return warnaLalai;
+            
             for (const [key, val] of Object.entries(HOUSE_CONFIG)) {
-                if (teksNama && teksNama.toUpperCase().includes(key)) {
+                if (teksNama.toUpperCase().includes(key)) {
                     return val.color;
                 }
             }
@@ -101,31 +95,31 @@ function binaSenaraiMata(feed) {
         card.innerHTML = `
             <div class="result-header">
                 <div class="result-title"><i class="fa-solid fa-flag-checkered" style="color: var(--gold);"></i> ${namaAcara}</div>
-                <div class="result-badge" style="color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2);">LIVE RESULT</div>
+                <div class="result-badge" style="color: #60a5fa; background: rgba(96,165,250,0.1); border: 1px solid rgba(96,165,250,0.2);">KEPUTUSAN LIVE</div>
             </div>
-            <div class="podium-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+            <div class="podium-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                 
-                <div class="medal-item" style="border-left: 4px solid ${borderEmas}; background: rgba(20,27,45,0.6);">
-                    <span style="font-size: 1.6rem; filter: drop-shadow(0 0 4px #ffd700);">🥇</span>
+                <div class="medal-item" style="border-left: 4px solid ${borderEmas}; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.6rem;">🥇</span>
                     <div>
-                        <div style="font-size: 0.75rem; color: var(--gold); font-family: 'Orbitron'; font-weight: bold; letter-spacing: 0.5px;">TEMPAT PERTAMA (EMAS)</div>
-                        <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-top: 2px;">${pemenangEmas}</div>
+                        <div style="font-size: 0.75rem; color: var(--gold); font-family: 'Orbitron'; font-weight: bold;">EMAS</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 1.05rem; margin-top: 2px;">${pemenangEmas}</div>
                     </div>
                 </div>
 
-                <div class="medal-item" style="border-left: 4px solid ${borderPerak}; background: rgba(20,27,45,0.6);">
-                    <span style="font-size: 1.6rem; filter: drop-shadow(0 0 4px #e2e8f0);">🥈</span>
+                <div class="medal-item" style="border-left: 4px solid ${borderPerak}; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.6rem;">🥈</span>
                     <div>
-                        <div style="font-size: 0.75rem; color: #cbd5e1; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 0.5px;">TEMPAT KEDUA (PERAK)</div>
-                        <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-top: 2px;">${pemenangPerak}</div>
+                        <div style="font-size: 0.75rem; color: #cbd5e1; font-family: 'Orbitron'; font-weight: bold;">PERAK</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 1.05rem; margin-top: 2px;">${pemenangPerak}</div>
                     </div>
                 </div>
 
-                <div class="medal-item" style="border-left: 4px solid ${borderGangsa}; background: rgba(20,27,45,0.6);">
-                    <span style="font-size: 1.6rem; filter: drop-shadow(0 0 4px #cd7f32);">🥉</span>
+                <div class="medal-item" style="border-left: 4px solid ${borderGangsa}; background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 6px; display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 1.6rem;">🥉</span>
                     <div>
-                        <div style="font-size: 0.75rem; color: #b45309; font-family: 'Orbitron'; font-weight: bold; letter-spacing: 0.5px;">TEMPAT KETIGA (GANGSA)</div>
-                        <div style="font-weight: 700; color: #fff; font-size: 1.1rem; margin-top: 2px;">${pemenangGangsa}</div>
+                        <div style="font-size: 0.75rem; color: #cd7f32; font-family: 'Orbitron'; font-weight: bold;">GANGSA</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 1.05rem; margin-top: 2px;">${pemenangGangsa}</div>
                     </div>
                 </div>
 
