@@ -64,7 +64,6 @@ async function fetchDashboardData() {
         updateUI(data);
     } catch (error) {
         console.error("Dashboard Engine Error:", error);
-        // Fallback mockup jika API gagal dihubungi atau internet padang terputus seketika
         generateMockupIfEmpty();
     }
 }
@@ -79,7 +78,7 @@ function updateUI(data) {
     updateScoreboard(ranking);
     updatePodium(ranking);
     updateChart(ranking);
-    updatePredictor(ranking, data); 
+    updatePredictor(ranking); // Dipermudahkan tanpa data olahragawan/wati
     
     if (data.medalTable) updateMedals(data.medalTable);
     if (data.eventFeed) updateTicker(data.eventFeed);
@@ -143,8 +142,8 @@ function updateChart(ranking) {
     pointsChart.update();
 }
 
-// CHAMPION PREDICTOR & LIVE ATHLETE TRACKING
-function updatePredictor(ranking, data) {
+// CHAMPION PREDICTOR (BERSIH - TIADA WORDING OLAHRAGAWAN/WATI)
+function updatePredictor(ranking) {
     if (ranking.length === 0) return;
     const topHouse = ranking[0];
     const secondHouse = ranking[1];
@@ -158,27 +157,11 @@ function updatePredictor(ranking, data) {
     badgeEl.style.backgroundColor = conf.color;
     badgeEl.style.color = topHouse.rumah === 'GAMMA' ? '#000' : '#fff';
 
-    let ulasanMata = diff > 50 
-        ? `${topHouse.rumah} mendominasi dengan jurang +${diff} mata.` 
-        : `${topHouse.rumah} memimpin tipis dengan beza +${diff} mata di hadapan ${secondHouse.rumah}.`;
-
-    let olahragawanTxt = "Menunggu data acara individu...";
-    let olahragawatiTxt = "Menunggu data acara individu...";
-
-    if (data && data.olahragawan && data.olahragawan.nama !== "Tiada Data") {
-        olahragawanTxt = `👑 <b>${data.olahragawan.nama}</b> (${data.olahragawan.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawan.emas} Emas | ${data.olahragawan.perak} Perak]</span>`;
+    if (diff > 50) {
+        textEl.innerHTML = `${topHouse.rumah} sedang mendominasi carta dengan kelebihan jurang <span style="color: var(--gold); font-weight: bold;">+${diff} mata</span> di hadapan. Peluang tinggi untuk bergelar Juara Keseluruhan!`;
+    } else {
+        textEl.innerHTML = `${topHouse.rumah} memimpin persaingan sengit dengan kelebihan beza <span style="color: var(--gold); font-weight: bold;">+${diff} mata</span> di hadapan ${secondHouse.rumah}. Kedudukan boleh berubah pada bila-bila masa!`;
     }
-    if (data && data.olahragawati && data.olahragawati.nama !== "Tiada Data") {
-        olahragawatiTxt = `👑 <b>${data.olahragawati.nama}</b> (${data.olahragawati.rumah})<br><span style="color: var(--gold); font-size: 0.9rem;">[${data.olahragawati.emas} Emas | ${data.olahragawati.perak} Perak]</span>`;
-    }
-
-    textEl.innerHTML = `
-        <div style="margin-bottom: 12px; font-weight: 600;">${ulasanMata}</div>
-        <div style="font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-            <div><i class="fa-solid fa-person-running" style="color: #60a5fa"></i> <b>Peneraju Olahragawan:</b><br><span style="color: #e2e8f0">${olahragawanTxt}</span></div>
-            <div><i class="fa-solid fa-person-running" style="color: #f472b6"></i> <b>Peneraju Olahragawati:</b><br><span style="color: #e2e8f0">${olahragawatiTxt}</span></div>
-        </div>
-    `;
 }
 
 // INJECT MEDAL DATA
@@ -199,14 +182,16 @@ function updateMedals(medalTable) {
     });
 }
 
-// UPDATE EVENT FEED (TICKER)
+// UPDATE EVENT FEED (TICKER) - VERSI JARAK PERLAHAN
 function updateTicker(feed) {
     const ticker = document.getElementById('eventFeedTicker');
     if (!feed || feed.length === 0) {
-        ticker.innerText = "Kejohanan sedang berlangsung riuh-rendah di padang SK Satu Sultan Alam Shah!";
+        ticker.innerText = "Kejohanan sedang berlangsung riuh-rendah di padang SK Satu Sultan Alam Shah! 🎉 🎉 🎉";
         return;
     }
-    ticker.innerText = feed.join('   |   🚀   ');
+    const jarakAntaraBerita = "                    🚀                    ";
+    const teksCantum = feed.join(jarakAntaraBerita);
+    ticker.innerHTML = teksCantum + jarakAntaraBerita + teksCantum;
 }
 
 // CATEGORY BREAKDOWN VISUALS
@@ -233,7 +218,7 @@ function updateBreakdown(breakdown) {
     }
 }
 
-// --- LOGIK RAHSIA ADMIN LOG (100% AUTOMATIK DARI LIVE SHEET) ---
+// --- LOGIK REHSIA ADMIN LOG (KEKAL DI SINI UNTUK VIEW PENUH) ---
 function toggleAdminModal() {
     const modal = document.getElementById('adminModal');
     if (modal.style.display === 'none' || modal.style.display === '') {
@@ -298,20 +283,18 @@ function filterAdminTable() {
     }
 }
 
-// FALLBACK SIMULATION (IF OFFLINE)
+// FALLBACK SIMULATION
 function generateMockupIfEmpty() {
     const mockData = {
         lastUpdate: new Date().toLocaleTimeString(),
         rankingRumah: [
-            { rumah: "ALPHA", mata: 10 }, { rumah: "BETA", mata: 0 }, { rumah: "DELTA", mata: 0 }, { rumah: "SIGMA", mata: 0 }, { rumah: "GAMMA", mata: 0 }
+            { rumah: "ALPHA", mata: 0 }, { rumah: "BETA", mata: 0 }, { rumah: "DELTA", mata: 0 }, { rumah: "SIGMA", mata: 0 }, { rumah: "GAMMA", mata: 0 }
         ],
         medalTable: [
-            { rumah: "ALPHA", emas: 1, perak: 0, gangsa: 0 }, { rumah: "BETA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "DELTA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "SIGMA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "GAMMA", emas: 0, perak: 0, gangsa: 0 }
+            { rumah: "ALPHA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "BETA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "DELTA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "SIGMA", emas: 0, perak: 0, gangsa: 0 }, { rumah: "GAMMA", emas: 0, perak: 0, gangsa: 0 }
         ],
-        eventFeed: ["Sistem sedia menerima kemas kini dari Google Sheet..."],
-        categoryBreakdown: { "Padang": { leader: "ALPHA", mata: 10, percentage: 10 } },
-        olahragawan: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 },
-        olahragawati: { nama: "Tiada Data", rumah: "-", emas: 0, perak: 0, gangsa: 0 },
+        eventFeed: ["Menunggu kemas kini keputusan rasmi dari Google Sheet..."],
+        categoryBreakdown: {},
         allAthletes: []
     };
     updateUI(mockData);
